@@ -1,32 +1,35 @@
 import { InputHTMLAttributes } from "react";
 import { InputContainer } from "./styles";
+import {
+  FieldError,
+  FieldErrorsImpl,
+  FieldValues,
+  Merge,
+  UseFormRegister,
+} from "react-hook-form";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label: string;
-  error: string | null;
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  errorMessage:
+    | FieldError
+    | Merge<FieldError, FieldErrorsImpl<any>>
+    | undefined;
+  register: UseFormRegister<FieldValues>;
 }
 
 const Input = ({
   name,
   label,
-  error,
-  value,
-  setValue,
+  errorMessage,
+  register,
   ...rest
 }: InputProps) => {
   return (
     <InputContainer>
       <label htmlFor={name}>{label}</label>
-      <input
-        type="text"
-        value={value}
-        onChange={({ target }) => setValue(target.value)}
-        {...rest}
-      />
-      {error && <p>{error}</p>}
+      <input type="text" {...register(name)} {...rest} />
+      {errorMessage && <p>{errorMessage.message?.toString()}</p>}
     </InputContainer>
   );
 };

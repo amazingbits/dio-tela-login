@@ -1,33 +1,55 @@
-import React from "react";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import { Container } from "./styles";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const LoginFormSchema = z.object({
+  email: z.string().email("Insira um e-mail válido"),
+  password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+});
 
 const Login = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: zodResolver(LoginFormSchema),
+    mode: "onChange",
+  });
+
+  const handleLoginForm = (data: any) => {
+    alert("Dados validados!");
+    reset();
+  };
 
   return (
     <Container>
       <h1>Efetuar login</h1>
-      <form>
+      <form onSubmit={handleSubmit(handleLoginForm)}>
         <Input
           label="E-mail"
           name="email"
           type="email"
-          error={null}
-          value={email}
-          setValue={setEmail}
+          errorMessage={errors?.email}
+          register={register}
+          autoFocus
         />
         <Input
           label="Senha"
           name="password"
           type="password"
-          error={null}
-          value={password}
-          setValue={setPassword}
+          errorMessage={errors?.password}
+          register={register}
         />
-        <Button>Efetuar login</Button>
+        {isValid ? (
+          <Button>Efetuar login</Button>
+        ) : (
+          <Button disabled>Efetuar login</Button>
+        )}
       </form>
     </Container>
   );
